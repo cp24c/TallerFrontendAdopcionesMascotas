@@ -1,0 +1,215 @@
+<app-navbar></app-navbar>
+<div class="container mt-4">
+  <h2 class="text-center">Gestión de Solicitudes de Adopción</h2>
+
+  <!-- Aviso si no hay solicitudes -->
+  <div
+    *ngIf="solicitudes.length === 0"
+    class="alert alert-warning text-center mt-4"
+  >
+    No hay solicitudes de adopción disponibles en este momento.
+  </div>
+
+  <!-- Tabla de solicitudes si existen -->
+  <div *ngIf="solicitudes.length > 0" class="table-responsive mt-4">
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th class="bg-success bg-gradient text-white align-middle">#</th>
+          <th class="bg-success bg-gradient text-white align-middle">
+            Identidad Solicitante
+          </th>
+          <th class="bg-success bg-gradient text-white align-middle">
+            Celular
+          </th>
+          <th class="bg-success bg-gradient text-white align-middle">
+            Correo Electrónico
+          </th>
+          <th class="bg-success bg-gradient text-white align-middle">
+            Mascota
+          </th>
+          <th class="bg-success bg-gradient text-white align-middle">
+            Especie
+          </th>
+          <th class="bg-success bg-gradient text-white align-middle">Raza</th>
+          <th class="bg-success bg-gradient text-white align-middle">
+            Fecha de Solicitud
+          </th>
+          <th class="bg-success bg-gradient text-white align-middle">Estado</th>
+          <th class="bg-success bg-gradient text-white align-middle">
+            Acciones
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let solicitud of solicitudes; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ solicitud.identidadSolicitante }}</td>
+          <td>{{ solicitud.celSolicitante }}</td>
+          <td>{{ solicitud.correoSolicitante }}</td>
+          <td>{{ solicitud.Mascota.nombre }}</td>
+          <td>{{ solicitud.Mascota.especie }}</td>
+          <td>{{ solicitud.Mascota.raza }}</td>
+          <td>{{ solicitud.fechaSolicitud | date : "short" }}</td>
+          <td
+            [ngClass]="{
+              'text-success font-weight-bold': solicitud.estado === 'Aceptada',
+              'text-danger font-weight-bold': solicitud.estado === 'Rechazada'
+            }"
+          >
+            {{ solicitud.estado }}
+          </td>
+          <td class="text-nowrap">
+            <!-- Botón Editar -->
+            <button
+              class="btn btn-warning btn-sm"
+              (click)="editarSolicitud(solicitud, modalEdit)"
+            >
+              Editar
+            </button>
+
+            <!-- Botón Aceptar: Solo mostrar si el estado no es "Aceptada" -->
+            <button
+              *ngIf="
+                solicitud.estado !== 'Aceptada' &&
+                solicitud.estado !== 'Rechazada'
+              "
+              class="btn btn-primary btn-sm ms-1"
+              (click)="aceptarSolicitud(solicitud)"
+            >
+              Aceptar
+            </button>
+
+            <!-- Botón Rechazar: Solo mostrar si el estado no es "Rechazada" -->
+            <button
+              *ngIf="
+                solicitud.estado !== 'Rechazada' &&
+                solicitud.estado !== 'Aceptada'
+              "
+              class="btn btn-danger btn-sm ms-1"
+              (click)="rechazarSolicitud(solicitud)"
+            >
+              Rechazar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para editar la solicitud -->
+  <ng-template #modalEdit let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Editar Solicitud</h5>
+      <button
+        type="button"
+        class="btn-close"
+        (click)="modal.dismiss()"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <form #solicitudForm="ngForm">
+        <!-- Identidad Solicitante -->
+        <div class="mb-3">
+          <label for="identidad" class="form-label"
+            >Identidad Solicitante</label
+          >
+          <input
+            [(ngModel)]="solicitudSeleccionada.identidadSolicitante"
+            name="identidad"
+            type="text"
+            class="form-control"
+            id="identidad"
+            required
+            minlength="6"
+            maxlength="10"
+            inputmode="numeric"
+            (keypress)="validarNumeros($event)"
+            (paste)="validarPegado($event)"
+            #identidadField="ngModel"
+          />
+          <div
+            *ngIf="identidadField.invalid && identidadField.touched"
+            class="text-danger"
+          >
+            La cédula debe tener mínimo 6 dígitos.
+          </div>
+        </div>
+
+        <!-- Celular -->
+        <div class="mb-3">
+          <label for="celular" class="form-label">Celular</label>
+          <input
+            [(ngModel)]="solicitudSeleccionada.celSolicitante"
+            name="celular"
+            type="text"
+            class="form-control"
+            id="celular"
+            required
+            minlength="10"
+            maxlength="10"
+            inputmode="numeric"
+            (keypress)="validarNumeros($event)"
+            (paste)="validarPegado($event)"
+            #celularField="ngModel"
+          />
+          <div
+            *ngIf="celularField.invalid && celularField.touched"
+            class="text-danger"
+          >
+            El número de celular debe tener exactamente 10 dígitos.
+          </div>
+        </div>
+
+        <!-- Correo Electrónico -->
+        <div class="mb-3">
+          <label for="correo" class="form-label">Correo Electrónico</label>
+          <input
+            [(ngModel)]="solicitudSeleccionada.correoSolicitante"
+            name="correo"
+            type="email"
+            class="form-control"
+            id="correo"
+            required
+            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+            #correoField="ngModel"
+          />
+          <div
+            *ngIf="correoField.invalid && correoField.touched"
+            class="text-danger"
+          >
+            El formato del correo es inválido.
+          </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="mb-3">
+          <label for="estado" class="form-label">Estado</label>
+          <select
+            [(ngModel)]="solicitudSeleccionada.estado"
+            name="estado"
+            class="form-select"
+            required
+          >
+            <option value="Pendiente">Pendiente</option>
+            <option value="Aceptada">Aceptada</option>
+            <option value="Rechazada">Rechazada</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-success bg-gradient"
+        (click)="guardarCambios(modal)"
+        [disabled]="solicitudForm.invalid"
+      >
+        Guardar cambios
+      </button>
+    </div>
+  </ng-template>
+</div>

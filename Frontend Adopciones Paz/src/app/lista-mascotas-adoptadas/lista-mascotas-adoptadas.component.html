@@ -1,0 +1,40 @@
+<div class="bg-light min-vh-100">
+  <!-- Barra de navegación superior -->
+  <app-navbar></app-navbar>
+  <!-- Álbum de mascotas -->
+  <div class="container pb-3">
+    <h1 class="text-center mb-4">Mascotas Adoptadas</h1>
+
+    <div *ngIf="mascotas.length > 0; else noMascotas">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        <!-- Volvemos a 3 columnas en pantallas grandes -->
+        <div class="col" *ngFor="let mascota of mascotas">
+          <div class="card h-100" style="max-width: 22rem">
+            <img
+              [src]="obtenerImagenMascota(mascota.imagen)"
+              class="card-img-top"
+              alt="Imagen de la mascota"
+              style="height: 200px"
+            />
+            <div class="card-body p-3">
+              <h5 class="card-title">{{ mascota.nombre }}</h5>
+              <p class="card-text">
+                <strong>Clase:</strong> {{ mascota.especie }} - {{ mascota.sexo
+                }}<br />
+                <strong>Raza:</strong> {{ mascota.raza }} <br />
+                <strong>Edad:</strong> {{ mascota.edad }} años <br />
+                <strong>Contacto:</strong> {{ mascota.contacto }} <br />
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #noMascotas>
+      <div class="alert alert-info text-center mt-5">
+        <h4 class="fw-bold">Lista vacia.</h4>
+        <p>Por favor, vuelve a intentarlo más tarde.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

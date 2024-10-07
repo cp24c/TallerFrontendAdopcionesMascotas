@@ -1,0 +1,152 @@
+<div class="bg-light min-vh-100">
+  <!-- Barra de navegación superior -->
+  <app-navbar></app-navbar>
+  <!-- Álbum de mascotas -->
+  <div class="container pb-3">
+    <h1 class="text-center mb-4">Mascotas Disponibles para Adopción</h1>
+
+    <div *ngIf="mascotas.length > 0; else noMascotas">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        <!-- Volvemos a 3 columnas en pantallas grandes -->
+        <div class="col" *ngFor="let mascota of mascotas">
+          <div class="card h-100" style="max-width: 22rem">
+            <img
+              [src]="obtenerImagenMascota(mascota.imagen)"
+              class="card-img-top"
+              alt="Imagen de la mascota"
+              style="height: 200px"
+            />
+            <div class="card-body p-3">
+              <h5 class="card-title">{{ mascota.nombre }}</h5>
+              <p class="card-text">
+                <strong>Clase:</strong> {{ mascota.especie }} - {{ mascota.sexo
+                }}<br />
+                <strong>Raza:</strong> {{ mascota.raza }} <br />
+                <strong>Edad:</strong> {{ mascota.edad }} años <br />
+                <strong>Contacto:</strong> {{ mascota.contacto }} <br />
+              </p>
+            </div>
+            <div class="card-footer text-center p-3 bg-white">
+              <a
+                [routerLink]="['/mascota', mascota.idMascota]"
+                class="btn bg-success bg-gradient text-white"
+                (click)="abrirModal(modalAdopcion, mascota.idMascota)"
+                >Adóptame</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #noMascotas>
+      <div class="alert alert-info text-center mt-5">
+        <h4 class="fw-bold">
+          No hay mascotas disponibles para adopción en este momento.
+        </h4>
+        <p>
+          Por favor, vuelve a intentarlo más tarde.
+        </p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Modal de formulario de adopción usando ng-bootstrap -->
+  <ng-template #modalAdopcion let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Formulario de Adopción</h4>
+      <button
+        type="button"
+        class="btn-close"
+        aria-label="Close"
+        (click)="modal.dismiss()"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <form #crearSolicitud="ngForm">
+        <div class="mb-3">
+          <label for="identificacion" class="form-label"
+            >Número de Identificación:</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="identificacion"
+            placeholder="Número de identificación"
+            [(ngModel)]="identificacion"
+            name="identificacion"
+            required
+            minlength="6"
+            maxlength="10"
+            inputmode="numeric"
+            (keypress)="validarNumeros($event)"
+            (paste)="validarPegado($event)"
+            #identificacionField="ngModel"
+          />
+          <div
+            *ngIf="identificacionField.invalid && identificacionField.invalid"
+            class="text-danger"
+          >
+            La identificación debe tener entre 6 y 10 dígitos.
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="celular" class="form-label">Celular:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="celular"
+            placeholder="Número de celular"
+            [(ngModel)]="celular"
+            name="celular"
+            required
+            minlength="10"
+            maxlength="10"
+            inputmode="numeric"
+            (keypress)="validarNumeros($event)"
+            (paste)="validarPegado($event)"
+            #celularField="ngModel"
+          />
+          <div
+            *ngIf="celularField.invalid && celularField.touched"
+            class="text-danger"
+          >
+            El número de celular debe tener 10 dígitos.
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="correo" class="form-label">Correo Electrónico:</label>
+          <input
+            type="email"
+            class="form-control"
+            id="correo"
+            placeholder="Correo Electrónico"
+            [(ngModel)]="correo"
+            name="correo"
+            required
+            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            #correoField="ngModel"
+          />
+          <div
+            *ngIf="correoField.invalid && correoField.touched"
+            class="text-danger"
+          >
+            Ingrese un correo válido.
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn btn-success"
+        (click)="formularioAdopcion()"
+        [disabled]="crearSolicitud.invalid"
+      >
+        Solicitar adopción
+      </button>
+    </div>
+  </ng-template>
+</div>

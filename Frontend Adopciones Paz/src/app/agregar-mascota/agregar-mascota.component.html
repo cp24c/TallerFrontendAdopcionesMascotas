@@ -1,0 +1,105 @@
+<app-navbar></app-navbar>
+
+<div class="container mt-4 mb-4">
+  <h2 class="mb-4 fw-light fw-semibold">Agregar Nueva Mascota</h2>
+  <form (ngSubmit)="agregarMascota()" #mascotaForm="ngForm">
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nombre:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="nombre"
+        [(ngModel)]="nuevaMascota.nombre"
+        name="nombre"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="edad" class="form-label">Edad:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="edad"
+        [(ngModel)]="nuevaMascota.edad"
+        name="edad"
+        required
+        minlength="1"
+        maxlength="2"
+        (keypress)="validarNumeros($event)"
+        (paste)="validarPegado($event)"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="especie" class="form-label">Tipo (ej: Gato):</label>
+      <input
+        type="text"
+        class="form-control"
+        id="especie"
+        [(ngModel)]="nuevaMascota.especie"
+        name="especie"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="raza" class="form-label">Raza (Si tiene menos de 1 año ingrese 0):</label>
+      <input
+        type="text"
+        class="form-control"
+        id="raza"
+        [(ngModel)]="nuevaMascota.raza"
+        name="raza"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label for="sexo" class="form-label">Sexo:</label>
+      <select
+        class="form-select"
+        id="sexo"
+        [(ngModel)]="nuevaMascota.sexo"
+        name="sexo"
+        required
+      >
+        <option value="Macho">Macho</option>
+        <option value="Hembra">Hembra</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="contacto" class="form-label"
+        >Contacto (Número de celular):</label
+      >
+      <input
+        type="text"
+        class="form-control"
+        id="contacto"
+        [(ngModel)]="nuevaMascota.contacto"
+        name="contacto"
+        required
+        minlength="10"
+        maxlength="10"
+        (keypress)="validarNumeros($event)"
+        (paste)="validarPegado($event)"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="imagen" class="form-label">Imagen de la Mascota:</label>
+      <input
+        type="file"
+        class="form-control"
+        id="imagen"
+        (change)="onFileSelected($event)"
+        required
+      />
+      <div *ngIf="!imagenSeleccionada && formSubmitted" class="text-danger">
+        Debes seleccionar una imagen.
+      </div>
+    </div>
+    <button
+      type="submit"
+      class="btn bg-success bg-gradient text-white"
+      [disabled]="mascotaForm.invalid || !imagenSeleccionada"
+    >
+      Agregar Mascota
+    </button>
+  </form>
+</div>
